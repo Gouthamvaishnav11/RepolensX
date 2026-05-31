@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --brand: 142 71% 45%;
+    --brand-dim: 142 71% 35%;
+    --card: 222 47% 10%;
+    --card-border: 222 47% 16%;
+    --muted: 217 33% 25%;
+    --muted-foreground: 215 20% 65%;
+  }
+
+  * {
+    @apply border-slate-700;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-dark-900 text-slate-100 font-body antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 197, 94, 0.06), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(99, 102, 241, 0.04), transparent);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-dark-800; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-500; }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-dark-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl;
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+  }
+
+  .score-ring {
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.4));
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-400 to-emerald-300 bg-clip-text text-transparent;
+  }
+
+  .btn-primary {
+    @apply bg-brand-600 hover:bg-brand-500 text-white font-medium px-5 py-2.5 rounded-xl
+           transition-all duration-200 hover:shadow-lg hover:shadow-brand-900/50
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-700 hover:bg-dark-600 text-slate-200 font-medium px-5 py-2.5 rounded-xl
+           border border-slate-700 transition-all duration-200 active:scale-95;
+  }
+
+  .input-field {
+    @apply bg-dark-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3
+           placeholder:text-slate-500 focus:outline-none focus:border-brand-500
+           focus:ring-1 focus:ring-brand-500/50 transition-all duration-200 w-full;
+  }
+
+  .nav-link {
+    @apply text-slate-400 hover:text-slate-100 transition-colors duration-200 text-sm font-medium;
+  }
+
+  .nav-link.active {
+    @apply text-brand-400;
+  }
+}
