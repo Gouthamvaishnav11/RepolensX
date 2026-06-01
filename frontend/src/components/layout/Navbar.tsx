@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom"
 import { useAuthStore } from "@/store/authStore"
-import { Search, BarChart2, GitBranch, User, LogOut, Zap, TrendingUp } from 'lucide-react'
+import { Search, BarChart2, GitBranch, User, LogOut, Zap, TrendingUp, DollarSign } from 'lucide-react'
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore()
   const location = useLocation()
@@ -58,6 +58,13 @@ export default function Navbar() {
             >
               <TrendingUp className="w-4 h-4" />
               Progress
+            </Link>
+            <Link
+              to="/pricing"
+              className={`nav-link flex items-center gap-1.5 ${isActive('/pricing') ? 'active' : ''}`}
+            >
+              < DollarSign className="w-4 h-4" />
+              Pricing
             </Link>
           </div>
         )}

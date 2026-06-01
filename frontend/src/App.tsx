@@ -11,6 +11,7 @@ import ChatPage from '@/pages/ChatPage'
 import ComparePage from '@/pages/ComparePage'
 import ProgressPage from '@/pages/ProgressPage'
 import RoadmapPage from '@/pages/RoadmapPage'
+import PricingPage from '@/pages/PricingPage'
 import ProfilePage from '@/pages/ProfilePage'
 import { useAuthStore } from '@/store/authStore'
 
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/progress" element={<Protected><ProgressPage /></Protected>} />
           <Route path="/roadmap" element={<Protected><RoadmapPage /></Protected>} />
           <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
+          <Route path="/pricing" element={<Protected><PricingPage /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
