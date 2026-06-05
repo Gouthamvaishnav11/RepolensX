@@ -5,13 +5,25 @@ from models.db_models import Base
 from config import settings
 from loguru import logger
 
-# ─── Async Engine (for FastAPI) ───────────────────────────
-ASYNC_DATABASE_URL = settings.DATABASE_URL.replace(
-    "postgresql://", "postgresql+asyncpg://"
-)
+
+def _async_url(url: str) -> str:
+    """Ensure URL uses asyncpg driver."""
+    if "postgresql+asyncpg" in url:
+        return url
+    return url.replace("postgresql://", "postgresql+asyncpg://").replace(
+        "postgresql+psycopg2://", "postgresql+asyncpg://"
+    )
+
+
+def _sync_url(url: str) -> str:
+    """Ensure URL uses psycopg2 driver."""
+    return url.replace("postgresql+asyncpg://", "postgresql://").replace(
+        "postgresql+psycopg2://", "postgresql://"
+    )
+
 
 async_engine = create_async_engine(
-    ASYNC_DATABASE_URL,
+    _async_url(settings.DATABASE_URL),
     echo=settings.DEBUG,
     pool_pre_ping=True,
     pool_size=10,
@@ -24,9 +36,8 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,
 )
 
-# ─── Sync Engine (for Celery tasks) ───────────────────────
 sync_engine = create_engine(
-    settings.DATABASE_URL,
+    _sync_url(settings.DATABASE_URL),
     echo=False,
     pool_pre_ping=True,
 )
@@ -38,7 +49,6 @@ SyncSessionLocal = sessionmaker(
 )
 
 
-# ─── Dependency for FastAPI routes ────────────────────────
 async def get_db() -> AsyncSession:
     async with AsyncSessionLocal() as session:
         try:
@@ -51,7 +61,6 @@ async def get_db() -> AsyncSession:
             await session.close()
 
 
-# ─── Create all tables ────────────────────────────────────
 async def create_tables():
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -11,8 +11,8 @@ import ChatPage from '@/pages/ChatPage'
 import ComparePage from '@/pages/ComparePage'
 import ProgressPage from '@/pages/ProgressPage'
 import RoadmapPage from '@/pages/RoadmapPage'
-import PricingPage from '@/pages/PricingPage'
 import ProfilePage from '@/pages/ProfilePage'
+import PricingPage from '@/pages/PricingPage'
 import { useAuthStore } from '@/store/authStore'
 
 function Protected({ children }: { children: React.ReactNode }) {
@@ -36,16 +36,16 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
-          <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />
-          <Route path="/analyze" element={<Protected><AnalyzePage /></Protected>} />
-          <Route path="/status/:repo_id" element={<Protected><StatusPage /></Protected>} />
-          <Route path="/report/:repo_id" element={<Protected><ReportPage /></Protected>} />
-          <Route path="/chat/:repo_id" element={<Protected><ChatPage /></Protected>} />
-          <Route path="/compare" element={<Protected><ComparePage /></Protected>} />
-          <Route path="/progress" element={<Protected><ProgressPage /></Protected>} />
-          <Route path="/roadmap" element={<Protected><RoadmapPage /></Protected>} />
-          <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
-          <Route path="/pricing" element={<Protected><PricingPage /></Protected>} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/dashboard"          element={<Protected><DashboardPage /></Protected>} />
+          <Route path="/analyze"            element={<Protected><AnalyzePage /></Protected>} />
+          <Route path="/status/:repo_id"    element={<Protected><StatusPage /></Protected>} />
+          <Route path="/report/:repo_id"    element={<Protected><ReportPage /></Protected>} />
+          <Route path="/chat/:repo_id"      element={<Protected><ChatPage /></Protected>} />
+          <Route path="/roadmap/:repo_id"   element={<Protected><RoadmapPage /></Protected>} />
+          <Route path="/compare"            element={<Protected><ComparePage /></Protected>} />
+          <Route path="/progress"           element={<Protected><ProgressPage /></Protected>} />
+          <Route path="/profile"            element={<Protected><ProfilePage /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

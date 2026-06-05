@@ -175,26 +175,30 @@ async def get_report(
         },
         "analysis": {
             "scores": {
-                "overall": analysis.overall_score,
-                "recruiter": analysis.recruiter_score,
-                "code_quality": analysis.code_quality_score,
+                "overall":       analysis.overall_score,
+                "recruiter":     analysis.recruiter_score,
+                "code_quality":  analysis.code_quality_score,
                 "documentation": analysis.documentation_score,
-                "testing": analysis.testing_score,
-                "devops": analysis.devops_score,
-                "architecture": analysis.architecture_score,
+                "testing":       analysis.testing_score,
+                "devops":        analysis.devops_score,
+                "architecture":  analysis.architecture_score,
             },
-            "summary": analysis.summary,
-            "strengths": analysis.strengths,
-            "weaknesses": analysis.weaknesses,
-            "missing_practices": analysis.missing_practices,
+            "summary":            analysis.summary,
+            "strengths":          analysis.strengths,
+            "weaknesses":         analysis.weaknesses,
+            "missing_practices":  analysis.missing_practices,
             "recruiter_feedback": analysis.recruiter_feedback,
-            "mentor_roadmap": analysis.mentor_roadmap,
-            "code_analysis": analysis.code_analysis,
-            "docs_analysis": analysis.docs_analysis,
-            "devops_analysis": analysis.devops_analysis,
-            "total_files": analysis.total_files,
-            "total_commits": analysis.total_commits,
-            "languages": analysis.languages_detected,
+            "mentor_roadmap":     analysis.mentor_roadmap,
+            "total_files":        analysis.total_files,
+            "total_commits":      analysis.total_commits,
+            "languages":          analysis.languages_detected,
+            # File paths for frontend to show which files relate to each score
+            "code_files": [
+                {"path": f.get("path", f) if isinstance(f, dict) else f}
+                for f in (analysis.recruiter_feedback or {}).get("code_file_paths", [])
+            ] if (analysis.recruiter_feedback or {}).get("code_file_paths") else
+            # Fallback: extract from chroma collection name or leave empty list
+            [],
         }
     }
 

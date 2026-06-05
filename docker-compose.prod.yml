@@ -1,0 +1,115 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: repolens_postgres
+    restart: always
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-repolens}
+      POSTGRES_USER:     ${POSTGRES_USER:-repolens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-repolens123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-repolens}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [repolens_net]
+
+  redis:
+    image: redis:7-alpine
+    container_name: repolens_redis
+    restart: always
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [repolens_net]
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: repolens_chromadb
+    restart: always
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      ANONYMIZED_TELEMETRY: "false"
+      ALLOW_RESET: "true"
+    networks: [repolens_net]
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: repolens_backend
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-repolens}:${POSTGRES_PASSWORD:-repolens123}@postgres:5432/${POSTGRES_DB:-repolens}
+      REDIS_URL:    redis://redis:6379/0
+      CHROMA_HOST:  chromadb
+      CHROMA_PORT:  "8000"
+      PYTHONPATH:   /app
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    volumes: [./backend:/app]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [repolens_net]
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: repolens_celery
+    restart: always
+    command: celery -A tasks.celery_app worker --loglevel=info --concurrency=2
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-repolens}:${POSTGRES_PASSWORD:-repolens123}@postgres:5432/${POSTGRES_DB:-repolens}
+      REDIS_URL:    redis://redis:6379/0
+      CHROMA_HOST:  chromadb
+      CHROMA_PORT:  "8000"
+      PYTHONPATH:   /app
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    volumes: [./backend:/app]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [repolens_net]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: repolens_frontend
+    restart: always
+    networks: [repolens_net]
+
+  nginx:
+    image: nginx:alpine
+    container_name: repolens_nginx
+    restart: always
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    depends_on: [backend, frontend]
+    networks: [repolens_net]
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:
+  nginx_logs:
+
+networks:
+  repolens_net:
+    driver: bridge

@@ -13,6 +13,7 @@ from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+
 @router.get("/github/login")
 async def github_login():
     """Redirect user to GitHub OAuth login page."""
@@ -24,7 +25,7 @@ async def github_login():
         f"&scope=read:user,user:email,repo"
         f"&state={state}"
     )
-    return RedirectResponse(url=github_auth_url)
+    return {"auth_url": github_auth_url, "state": state}
 
 
 @router.get("/github/callback")
