@@ -16,8 +16,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.get("/github/login")
 async def github_login():
-    """Redirect user to GitHub OAuth login page."""
     state = secrets.token_urlsafe(32)
+
     github_auth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={settings.GITHUB_CLIENT_ID}"
@@ -25,7 +25,8 @@ async def github_login():
         f"&scope=read:user,user:email,repo"
         f"&state={state}"
     )
-    return {"auth_url": github_auth_url, "state": state}
+
+    return RedirectResponse(url=github_auth_url)
 
 
 @router.get("/github/callback")
