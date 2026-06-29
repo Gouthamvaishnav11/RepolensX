@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # ─── PostgreSQL Database ───────────────────────────────────────────
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: repolens_postgres
     restart: always
     environment:
@@ -93,7 +93,7 @@ services:
       - ./backend:/app
       - ./vector_store:/app/vector_store
     ports:
-      - "8000:8000"
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -101,7 +101,7 @@ services:
         condition: service_healthy
       chromadb:
         condition: service_healthy
-    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload
 
   # ─── Celery Worker ─────────────────────────────────────────────────
   celery_worker:

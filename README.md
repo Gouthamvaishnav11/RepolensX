@@ -422,8 +422,8 @@ npm run dev
 | Service | URL |
 |---|---|
 | Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8000 |
-| API Docs (Swagger) | http://localhost:8000/docs |
+| Backend API | http://localhost:8080 |
+| API Docs (Swagger) | http://localhost:8080/docs |
 | ChromaDB | http://localhost:8001 |
 | MinIO Console | http://localhost:9001 |
 

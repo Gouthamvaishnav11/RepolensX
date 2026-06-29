@@ -207,6 +207,19 @@ export default function ReportPage() {
     { key: 'architecture',  icon: Layout,   title: 'Architecture',   score: Math.round(scores.architecture  || 0), color: '#f97316' },
   ]
 
+  // Helper to safely get string values
+  const getSafeString = (value: any): string => {
+    if (typeof value === 'string') return value
+    if (typeof value === 'number') return String(value)
+    return ''
+  }
+
+  // Helper to safely check if string includes substring
+  const safeIncludes = (value: any, substring: string): boolean => {
+    const str = getSafeString(value)
+    return str.includes(substring)
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-28">
 
@@ -336,40 +349,87 @@ export default function ReportPage() {
         ))}
       </div>
 
-      {/* Recruiter Section */}
-      {rf?.hiring_recommendation && (
+      {/* Recruiter Section - FIXED */}
+      {rf && Object.keys(rf).length > 0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="glass-card p-6 mb-6">
           <h2 className="font-display font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-brand-400" />Recruiter Evaluation
           </h2>
+          
+          {/* Recruiter badges - safely render only if values exist and are strings */}
           <div className="flex flex-wrap gap-2 mb-3">
-            <span className={`text-sm font-bold px-3 py-1.5 rounded-lg border ${
-              rf.hiring_recommendation?.includes('Yes')
-                ? 'bg-green-900/30 text-green-400 border-green-700'
-                : rf.hiring_recommendation === 'Maybe'
-                ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700'
-                : 'bg-red-900/30 text-red-400 border-red-700'
-            }`}>{rf.hiring_recommendation}</span>
-            {rf.seniority_level && (
+            {rf.hiring_recommendation && typeof rf.hiring_recommendation === 'string' && (
+              <span className={`text-sm font-bold px-3 py-1.5 rounded-lg border ${
+                rf.hiring_recommendation.includes('Yes')
+                  ? 'bg-green-900/30 text-green-400 border-green-700'
+                  : rf.hiring_recommendation === 'Maybe'
+                  ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700'
+                  : 'bg-red-900/30 text-red-400 border-red-700'
+              }`}>
+                {rf.hiring_recommendation}
+              </span>
+            )}
+            
+            {rf.seniority_level && typeof rf.seniority_level === 'string' && (
               <span className="text-sm px-3 py-1.5 rounded-lg border bg-dark-700 text-slate-300 border-slate-700">
                 {rf.seniority_level}
               </span>
             )}
-            {rf.confidence_score && (
+            
+            {rf.confidence_score && typeof rf.confidence_score === 'number' && (
               <span className="text-sm px-3 py-1.5 rounded-lg border bg-brand-900/30 text-brand-400 border-brand-700">
                 Confidence: {rf.confidence_score}/100
               </span>
             )}
           </div>
+
+          {/* Recruiter description - safely render */}
           <p className="text-slate-300 text-sm leading-relaxed">
-            {desc.recruiter || rf.written_feedback ||
-              `${rf.hiring_recommendation?.includes('Yes')
-                ? `This developer demonstrates ${rf.seniority_level?.toLowerCase() || 'solid'} level skills. The repository would likely pass an initial technical portfolio review.`
-                : `This repository shows potential. Improving the score to above 70 by adding tests and CI/CD would make it interview-ready.`
-              }`
-            }
+            {(() => {
+              // Try to get description from various sources
+              if (desc.recruiter && typeof desc.recruiter === 'string') {
+                return desc.recruiter
+              }
+              if (rf.written_feedback && typeof rf.written_feedback === 'string') {
+                return rf.written_feedback
+              }
+              
+              // Generate fallback description
+              const recommendation = getSafeString(rf.hiring_recommendation)
+              const seniority = getSafeString(rf.seniority_level)
+              
+              if (recommendation.includes('Yes')) {
+                return `This developer demonstrates ${seniority.toLowerCase() || 'solid'} level skills. The repository would likely pass an initial technical portfolio review.`
+              } else {
+                return `This repository shows potential. Improving the score to above 70 by adding tests and CI/CD would make it interview-ready.`
+              }
+            })()}
           </p>
+
+          {/* Green Flags */}
+          {rf.green_flags && Array.isArray(rf.green_flags) && rf.green_flags.length > 0 && (
+            <div className="mt-3">
+              <p className="text-xs text-green-400 font-semibold mb-1.5">✅ Green Flags:</p>
+              <ul className="text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                {rf.green_flags.map((flag: string, i: number) => (
+                  <li key={i}>{flag}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Red Flags */}
+          {rf.red_flags && Array.isArray(rf.red_flags) && rf.red_flags.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs text-red-400 font-semibold mb-1.5">⚠️ Red Flags:</p>
+              <ul className="text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                {rf.red_flags.map((flag: string, i: number) => (
+                  <li key={i}>{flag}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </motion.div>
       )}
 

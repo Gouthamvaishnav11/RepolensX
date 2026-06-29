@@ -21,7 +21,7 @@ const stats = [
 ]
 
 export default function HomePage() {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
   return (
     <div className="min-h-screen">

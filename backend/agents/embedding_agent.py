@@ -35,12 +35,19 @@ class EmbeddingAgent:
         ]
 
     def _collection(self, repo_id: str):
-        name = f"repo_{repo_id.replace('-', '_')}"
-        try:
-            self.chroma.delete_collection(name)
-        except Exception:
-            pass
-        return self.chroma.create_collection(name=name, metadata={"hnsw:space": "cosine"})
+     name = f"repo_{repo_id.replace('-', '_')}"
+     try:
+         self.chroma.delete_collection(name)
+     except Exception:
+        pass
+     try:
+          return self.chroma.create_collection(
+            name=name,
+            metadata={"hnsw:space": "cosine"},
+        )
+     except Exception:
+        # Fallback — no metadata (older ChromaDB versions)
+        return self.chroma.create_collection(name=name)
 
     def run(self, repo_data: dict, repo_id: str) -> str:
         logger.info(f"Embedding: {repo_id}")

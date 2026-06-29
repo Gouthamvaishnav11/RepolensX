@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     GITHUB_TOKEN:       str = ""
     GITHUB_CLIENT_ID:   str = ""
     GITHUB_CLIENT_SECRET: str = ""
-    GITHUB_REDIRECT_URI:  str = "http://localhost:8000/api/auth/github/callback"
+    GITHUB_REDIRECT_URI:  str = "http://localhost:8080/api/auth/github/callback"
 
     # Ollama
     OLLAMA_BASE_URL:   str = "http://localhost:11434"

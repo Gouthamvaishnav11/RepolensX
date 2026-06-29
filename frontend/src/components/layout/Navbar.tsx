@@ -9,7 +9,7 @@ export default function Navbar() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/auth/github/login")
+      const res = await fetch("http://localhost:8080/api/auth/github/login")
       const data = await res.json()
       window.location.href = data.auth_url
     } catch (err) {
